@@ -26,7 +26,7 @@ run:
 		--shm-size $(SHM_SIZE) \
 		--privileged \
 		$(IMAGE_NAME) \
-		/sbin/init
+		/bin/bash
 
 exec:
 	docker exec \
@@ -38,7 +38,7 @@ stop:
 
 build_ubuntu:
 	docker build \
-		-f docker_ubuntu_1904/Dockerfile \
+		-f docker_ubuntu/Dockerfile \
 		-t $(UBUNTU_IMAGE) \
 		--no-cache \
 		--force-rm=$(FORCE_RM) \

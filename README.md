@@ -12,7 +12,7 @@ make build_alpine
 make run_alpine
 make exec_alpine
 ```
-- Debian + Golang1.20
+- ubuntu:20.04+Golang:1.19
 ```
 make build
 make run
