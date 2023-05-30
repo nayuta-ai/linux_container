@@ -49,6 +49,7 @@ run_ubuntu:
 		-dit \
 		-v $(PWD):/usr/src \
 		--name $(UBUNTU_CONTAINER) \
+		--cap-add ALL \
 		--rm \
 		--shm-size $(SHM_SIZE) \
 		--privileged \

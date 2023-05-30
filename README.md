@@ -6,7 +6,7 @@ make build_ubuntu
 make run_ubuntu
 make exec_ubuntu
 ```
-- Alpine:3.17
+- Golang:1.19+Alpine
 ```
 make build_alpine
 make run_alpine
