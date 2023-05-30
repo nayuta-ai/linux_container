@@ -33,3 +33,11 @@ $ go build src/myuts.go
 ```
 $ ./myuts parent /bin/sh
 ```
+
+## To Do
+- [ ] Currently only supports amd64, so make it available for arm64 as well.
+  - [ ] Eliminate `netsetgo` and change to code that also works on arm64.
+- [ ] Add function for cgroup
+  - [ ] Apply cgroupv1
+  - [ ] Apply cgroupv2
+  - [ ] Set up systemd
