@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -16,6 +18,27 @@ func main() {
 		child()
 	default:
 		panic("help")
+	}
+}
+
+func waitForNetwork() error {
+	maxWait := time.Second * 3
+	checkInterval := time.Second
+	timeStarted := time.Now()
+	for {
+		interfaces, err := net.Interfaces()
+		if err != nil {
+			return err
+		}
+		// pretty basic check ...
+		// > 1 as a lo device will already exist
+		if len(interfaces) > 1 {
+			return nil
+		}
+		if time.Since(timeStarted) > maxWait {
+			return fmt.Errorf("Timeout after %s waiting for network", maxWait)
+		}
+		time.Sleep(checkInterval)
 	}
 }
 
@@ -87,6 +110,24 @@ func parent() {
 		},
 	}
 	must(cmd.Run())
+
+	pid := fmt.Sprintf("%d", cmd.Process.Pid)
+	// Code velow does the following
+	// Create the bridge on the host
+	// Create the veth pair
+	// Attaches one end of veth to bridge
+	// Attaches the other end to the network namespace. This is interresting
+	// as we now have access to the host side and the network side until
+	// we block.
+	netsetgoCmd := exec.Command("/usr/local/bin/netsetgo", "-pid", pid)
+	if err := netsetgoCmd.Run(); err != nil {
+		fmt.Printf("Error running netsetgo - %s\n", err)
+		os.Exit(1)
+	}
+	if err := cmd.Wait(); err != nil {
+		fmt.Printf("Error waiting for reexec.Command - %s\n", err)
+		os.Exit(1)
+	}
 }
 
 // this is the child process which is a copy of the parent program itself.
@@ -105,8 +146,15 @@ func child() {
 		fmt.Printf("Error running pivot_root - %s\n", err)
 		os.Exit(1)
 	}
+	if err := waitForNetwork(); err != nil {
+		fmt.Printf("Error waiting for network - %s\n", err)
+		os.Exit(1)
+	}
 	// this command executes the shell which is passed as a program argumnent
-	must(cmd.Run())
+	if err := cmd.Run(); err != nil {
+		fmt.Printf("Error starting the reexec.Command - %s\n", err)
+		os.Exit(1)
+	}
 }
 
 func must(err error) {
