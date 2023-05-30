@@ -109,7 +109,7 @@ func parent() {
 			},
 		},
 	}
-	must(cmd.Run())
+	must(cmd.Start())
 
 	pid := fmt.Sprintf("%d", cmd.Process.Pid)
 	// Code velow does the following

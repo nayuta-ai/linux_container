@@ -5,7 +5,7 @@ FROM --platform=linux/amd64 ubuntu:20.04
 ENV GO_VERSION=1.19
 
 RUN apt-get update
-RUN apt-get install -y wget git gcc xz-utils
+RUN apt-get install -y wget git gcc xz-utils net-tools iproute2
 
 RUN wget -P /tmp "https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz"
 
