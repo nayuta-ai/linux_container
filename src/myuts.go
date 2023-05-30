@@ -95,10 +95,12 @@ func child() {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	// make a call to mountProc function which would mount the proc filesystem
+	// to the already created mount namespace
+	must(mountProc("/usr/src/rootfs"))
 	// the command below sets the hostname to myhost. Idea here is to showcase
 	// the use of UTS namespace
 	must(syscall.Sethostname([]byte("myhost")))
-	fmt.Println("sethostname")
 	if err := pivotRoot("/usr/src/rootfs"); err != nil {
 		fmt.Printf("Error running pivot_root - %s\n", err)
 		os.Exit(1)
@@ -111,4 +113,26 @@ func must(err error) {
 	if err != nil {
 		fmt.Printf("Error - %s\n", err)
 	}
+}
+
+// this function mounts the proc filesystem which the
+// new mount namespace
+func mountProc(newroot string) error {
+	source := "proc"
+	target := filepath.Join(newroot, "/proc")
+	fstype := "proc"
+	flags := 0
+	data := ""
+	// make a Mount system call to mount the proc filesystem within the mount namespace
+	os.MkdirAll(target, 0755)
+	if err := syscall.Mount(
+		source,
+		target,
+		fstype,
+		uintptr(flags),
+		data,
+	); err != nil {
+		return err
+	}
+	return nil
 }

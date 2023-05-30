@@ -18,3 +18,18 @@ make build
 make run
 make exec
 ```
+## Create Container
+1. Expand busybox.tar using the below command.
+```
+$ cd rootfs
+$ tar xvf busybox.tar
+```
+2. Create a binary file.
+```
+$ cd ..
+$ go build src/myuts.go
+```
+3. Execute and create the new container
+```
+$ ./myuts parent /bin/sh
+```

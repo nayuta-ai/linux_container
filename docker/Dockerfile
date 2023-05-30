@@ -5,7 +5,7 @@ FROM ubuntu:20.04
 ENV GO_VERSION=1.19
 
 RUN apt-get update
-RUN apt-get install -y wget git gcc
+RUN apt-get install -y wget git gcc xz-utils
 
 RUN wget -P /tmp "https://dl.google.com/go/go${GO_VERSION}.linux-arm64.tar.gz"
 
