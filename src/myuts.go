@@ -28,7 +28,7 @@ func enableCgroup() {
 	pids := filepath.Join(cgroups, "child")
 
 	must(ioutil.WriteFile(filepath.Join(pids, "memory.max"), []byte("2M"), 0700))
-	must(ioutil.WriteFile(filepath.Join(pids,"cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
+	must(ioutil.WriteFile(filepath.Join(pids, "cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
 }
 
 func waitForNetwork() error {
@@ -150,11 +150,11 @@ func child() {
 	cmd.Stderr = os.Stderr
 	// make a call to mountProc function which would mount the proc filesystem
 	// to the already created mount namespace
-	must(mountProc("/workdir/linux_container/rootfs"))
+	must(mountProc("/home/vagrant/linux_container/rootfs"))
 	// the command below sets the hostname to myhost. Idea here is to showcase
 	// the use of UTS namespace
 	must(syscall.Sethostname([]byte("myhost")))
-	if err := pivotRoot("/workdir/linux_container/rootfs"); err != nil {
+	if err := pivotRoot("/home/vagrant/linux_container/rootfs"); err != nil {
 		fmt.Printf("Error running pivot_root - %s\n", err)
 		os.Exit(1)
 	}
