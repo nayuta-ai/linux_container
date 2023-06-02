@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"syscall"
 	"time"
 )
@@ -19,6 +21,14 @@ func main() {
 	default:
 		panic("help")
 	}
+}
+
+func enableCgroup() {
+	cgroups := "/root/mygrp"
+	pids := filepath.Join(cgroups, "child")
+
+	must(ioutil.WriteFile(filepath.Join(pids, "memory.max"), []byte("2M"), 0700))
+	must(ioutil.WriteFile(filepath.Join(pids,"cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
 }
 
 func waitForNetwork() error {
@@ -132,17 +142,19 @@ func parent() {
 
 // this is the child process which is a copy of the parent program itself.
 func child() {
+	// enable the cgroup functionality
+	enableCgroup()
 	cmd := exec.Command(os.Args[2], os.Args[3:]...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	// make a call to mountProc function which would mount the proc filesystem
 	// to the already created mount namespace
-	must(mountProc("/usr/src/rootfs"))
+	must(mountProc("/workdir/linux_container/rootfs"))
 	// the command below sets the hostname to myhost. Idea here is to showcase
 	// the use of UTS namespace
 	must(syscall.Sethostname([]byte("myhost")))
-	if err := pivotRoot("/usr/src/rootfs"); err != nil {
+	if err := pivotRoot("/workdir/linux_container/rootfs"); err != nil {
 		fmt.Printf("Error running pivot_root - %s\n", err)
 		os.Exit(1)
 	}
