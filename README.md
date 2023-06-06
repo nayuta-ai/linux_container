@@ -1,4 +1,6 @@
 # linux container
+## Architecture
+x86_64
 ## Environment
 - ubuntu:20.04+Golang:1.19
 ```
