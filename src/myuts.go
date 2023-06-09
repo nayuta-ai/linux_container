@@ -153,13 +153,18 @@ func child() {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Printf("Error fetching current working directory - %s\n", err)
+		os.Exit(1)
+	}
 	// make a call to mountProc function which would mount the proc filesystem
 	// to the already created mount namespace
-	must(mountProc("/home/vagrant/linux_container/rootfs"))
+	must(mountProc(filepath.Join(dir, "rootfs")))
 	// the command below sets the hostname to myhost. Idea here is to showcase
 	// the use of UTS namespace
 	must(syscall.Sethostname([]byte("myhost")))
-	if err := pivotRoot("/home/vagrant/linux_container/rootfs"); err != nil {
+	if err := pivotRoot(filepath.Join(dir, "rootfs")); err != nil {
 		fmt.Printf("Error running pivot_root - %s\n", err)
 		os.Exit(1)
 	}

@@ -21,12 +21,11 @@ GRUB_CMDLINE_LINUX_DEFAULT="quiet splash systemd.unified_cgroup_hierarchy=1"
 $ update-grub
 $ reboot
 ```
-1. Set up cgroupv2
+1. Set up
 ```
 # ssh -p 2222 vagrant@localhost
 $ sudo su
 $ cd linux_container
-$ source setup_cgroup2.sh
 ```
 2. Create a binary file.
 ```
