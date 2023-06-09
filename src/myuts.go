@@ -12,6 +12,9 @@ import (
 	"time"
 )
 
+var cgroupRootPath = "/sys/fs/cgroup"
+var cgroupChildPath = filepath.Join(cgroupRootPath, "child")
+
 func main() {
 	switch os.Args[1] {
 	case "parent":
@@ -23,12 +26,13 @@ func main() {
 	}
 }
 
-func enableCgroup() {
-	cgroups := "/root/mygrp"
-	pids := filepath.Join(cgroups, "child")
+func createChildCgroup() {
+	os.Mkdir(cgroupChildPath, os.ModePerm)
+}
 
-	must(ioutil.WriteFile(filepath.Join(pids, "memory.max"), []byte("2M"), 0700))
-	must(ioutil.WriteFile(filepath.Join(pids, "cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
+func enableCgroup() {
+	must(ioutil.WriteFile(filepath.Join(cgroupChildPath, "memory.max"), []byte("2M"), 0700))
+	must(ioutil.WriteFile(filepath.Join(cgroupChildPath, "cgroup.procs"), []byte(strconv.Itoa(os.Getpid())), 0700))
 }
 
 func waitForNetwork() error {
@@ -90,6 +94,7 @@ func pivotRoot(newroot string) error {
 
 // the parent function invoked from the main program which sets up the needed namespaces
 func parent() {
+	createChildCgroup()
 	cmd := exec.Command("/proc/self/exe", append([]string{"child"}, os.Args[2:]...)...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
