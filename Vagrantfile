@@ -72,18 +72,30 @@ Vagrant.configure("2") do |config|
       sudo tar -C /usr/local -xzf "/tmp/go${GO_VERSION}.linux-amd64.tar.gz"
       sudo rm "/tmp/go${GO_VERSION}.linux-amd64.tar.gz"
       
-      echo export GO_PATH=#{ENV["GO_PATH"]} >> /etc/profile.d/vagrant.sh
-      echo export PATH=#{ENV["PATH"]} >> /etc/profile.d/vagrant.sh
+      sudo echo export GO_PATH=#{ENV["GO_PATH"]} >> /etc/profile.d/vagrant.sh
+      sudo echo export PATH=#{ENV["PATH"]} >> /etc/profile.d/vagrant.sh
       sudo mkdir -p "$GOPATH/src" "$GOPATH/bin"
       sudo chmod -R 777 "$GOPATH"
       wget "https://github.com/teddyking/netsetgo/releases/download/0.0.1/netsetgo"
       sudo mv netsetgo /usr/local/bin/
       sudo chown root:root /usr/local/bin/netsetgo
       sudo chmod 4755 /usr/local/bin/netsetgo
-      cd $HOME/vagrant
+      sudo apt-get update
+      sudo apt-get install -y init systemd vim git cmake make libseccomp-dev pkg-config\
+        gettext-base jq curl tmux g++ lcov libbsd0 libbsd-dev sudo kmod nodejs npm
+      sudo npm install -g tap
+      cd $HOME
       git clone https://github.com/nayuta-ai/linux_container.git
-      cd linux_container/rootfs
+      git clone https://github.com/opencontainers/runc.git
+      git clone https://github.com/opencontainers/runtime-tools.git
+      cd $HOME/linux_container/rootfs
       tar xvf busybox.tar
+      cd $HOME/runc
+      make
+      sudo make install
+      cd $HOME/runtime-tools
+      make runtimetest validation-executables
+      rm -r $HOME/runc
     SHELL
   end
   

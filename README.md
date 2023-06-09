@@ -36,3 +36,14 @@ $ go build src/myuts.go
 ```
 $ ./myuts parent /bin/sh
 ```
+4. Add the binary to path (To Do)
+```
+$ mv myuts /usr/local/sbin/myuts
+```
+
+## How to execute integration test for OCI (To Do)
+- This container runtime doesn't work well.
+- We describe how to execute OCI test when assigning runc in the below.
+```
+RUNTIME=runc validation/default/default.t
+```
