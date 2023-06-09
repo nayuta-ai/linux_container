@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -14,17 +15,6 @@ import (
 
 var cgroupRootPath = "/sys/fs/cgroup"
 var cgroupChildPath = filepath.Join(cgroupRootPath, "child")
-
-func main() {
-	switch os.Args[1] {
-	case "parent":
-		parent()
-	case "child":
-		child()
-	default:
-		panic("help")
-	}
-}
 
 func createChildCgroup() {
 	os.Mkdir(cgroupChildPath, os.ModePerm)
@@ -205,4 +195,27 @@ func mountProc(newroot string) error {
 		return err
 	}
 	return nil
+}
+
+func parse() {
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Printf("Error fetching current working directory - %s\n", err)
+		os.Exit(1)
+	}
+	configPath := filepath.Join(dir, "config/config.json")
+	f, err := os.Open(configPath)
+	if err != nil {
+		fmt.Printf("Error opening config file - %s\n", err)
+		os.Exit(1)
+	}
+	dec := json.NewDecoder(f)
+	var config Config
+
+	if err := dec.Decode(&config); err != nil {
+		fmt.Printf("Error decoding config file - %s\n", err)
+		os.Exit(1)
+	}
+	f.Close()
+	fmt.Println(config.OciVersion)
 }
