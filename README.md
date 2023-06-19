@@ -30,15 +30,15 @@ $ cd linux_container
 2. Create a binary file.
 ```
 $ PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
-$ go build src/myuts.go
+$ go build .
 ```
 3. Execute and create the new container
 ```
-$ ./myuts parent /bin/sh
+$ ./linux_container parent /bin/sh
 ```
 4. Add the binary to path (To Do)
 ```
-$ mv myuts /usr/local/sbin/myuts
+$ mv linux_container /usr/local/sbin/linux_container
 ```
 
 ## How to execute integration test for OCI (To Do)
