@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
     # boxes will only be checked for updates when the user runs
     # `vagrant box outdated`. This is not recommended.
     # config.vm.box_check_update = false
-  
+
     # Create a forwarded port mapping which allows access to a specific port
     # within the machine from a port on the host machine. In the example below,
     # accessing "localhost:8080" will access port 80 on the guest machine.
@@ -84,18 +84,20 @@ Vagrant.configure("2") do |config|
       sudo apt-get install -y init systemd vim git cmake make libseccomp-dev pkg-config\
         gettext-base jq curl tmux g++ lcov libbsd0 libbsd-dev sudo kmod nodejs npm
       sudo npm install -g tap
-      cd $HOME
+      cd /home/vagrant
       git clone https://github.com/nayuta-ai/linux_container.git
       git clone https://github.com/opencontainers/runc.git
       git clone https://github.com/opencontainers/runtime-tools.git
-      cd $HOME/linux_container/rootfs
+      sudo chown -R vagrant linux_container
+      sudo chown -R vagrant runtime-tools
+      cd /home/vagrant/linux_container/rootfs
       tar xvf busybox.tar
-      cd $HOME/runc
+      cd /home/vagrant/runc
       make
       sudo make install
-      cd $HOME/runtime-tools
+      cd /home/vagrant/runtime-tools
       make runtimetest validation-executables
-      rm -r $HOME/runc
+      rm -r /home/vagrant/runc
     SHELL
   end
   
