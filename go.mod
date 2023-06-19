@@ -1,3 +1,3 @@
-module container
+module github.com/nayuta-ai/linux_container
 
-go 1.20
+go 1.19
